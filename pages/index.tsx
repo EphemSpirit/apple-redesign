@@ -1,6 +1,7 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Header from '../components/UI/Header'
+import Landing from '../components/Homepage/Landing'
 
 const Home: NextPage = () => {
   return (
@@ -11,6 +12,9 @@ const Home: NextPage = () => {
       </Head>
 
       <Header />
+      <main className='relative h-[200vh] bg-[#E7ECEE]'>
+        <Landing />
+      </main>
     </div>
   )
 }
