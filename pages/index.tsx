@@ -2,12 +2,21 @@ import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import Header from "../components/UI/Header";
 import Landing from "../components/Homepage/Landing";
+import Product from '../components/Products/Product'
 import { Tab } from '@headlessui/react'
 import { fetchCategories } from '../utils/fetchCategories'
+import { fetchProducts } from '../utils/fetchProducts'
 import { LandingProps } from '../interfaces/landing-props'
 
 
-const Home = ({ categories }: LandingProps) => {
+const Home = ({ categories, products }: LandingProps) => {
+
+  const showProducts = (category: number) => {
+    return products
+      .filter((product) => product.category._ref === categories[category]._id)
+      .map((product) => <Product product={product} key={product._id} />);
+  };
+
   return (
     <div className="">
       <Head>
@@ -43,10 +52,10 @@ const Home = ({ categories }: LandingProps) => {
               ))}
             </Tab.List>
             <Tab.Panels className="mx-auto max-w-fit pt-10 pb-24 sm:px-4">
-              {/* <Tab.Panel className="tabPanel">{showProducts(0)}</Tab.Panel>
+              <Tab.Panel className="tabPanel">{showProducts(0)}</Tab.Panel>
               <Tab.Panel className="tabPanel">{showProducts(1)}</Tab.Panel>
               <Tab.Panel className="tabPanel">{showProducts(2)}</Tab.Panel>
-              <Tab.Panel className="tabPanel">{showProducts(3)}</Tab.Panel> */}
+              <Tab.Panel className="tabPanel">{showProducts(3)}</Tab.Panel>
             </Tab.Panels>
           </Tab.Group>
 
@@ -60,9 +69,11 @@ export default Home;
 
 export const getServerSideProps: GetServerSideProps<LandingProps> = async () => {
   const categories = await fetchCategories()
+  const products = await fetchProducts();
   return {
     props: {
-      categories
+      categories,
+      products
     }
   }
 };
