@@ -7,6 +7,7 @@ import { Tab } from '@headlessui/react'
 import { fetchCategories } from '../utils/fetchCategories'
 import { fetchProducts } from '../utils/fetchProducts'
 import { LandingProps } from '../interfaces/landing-props'
+import Basket from "../components/Homepage/Basket";
 
 
 const Home = ({ categories, products }: LandingProps) => {
@@ -25,6 +26,9 @@ const Home = ({ categories, products }: LandingProps) => {
       </Head>
 
       <Header />
+
+      <Basket />
+      
       <main className="relative h-[200vh] bg-[#E7ECEE]">
         <Landing />
       </main>
