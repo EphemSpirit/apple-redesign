@@ -47,10 +47,11 @@ export const selectBasketItemsWithId = (state: RootState, id: string) => {
 };
 
 export const selectBasketTotal = (state: RootState) => {
-  state.basket.items.reduce(
+  return state.basket.items.reduce(
     (total: number, item: Product) => (total += item.price),
     0
   );
+  
 };
 
 export default basketSlice.reducer;
