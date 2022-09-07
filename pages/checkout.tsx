@@ -8,10 +8,14 @@ import { useRouter } from "next/router";
 import CheckoutProduct from "../components/Checkout/CheckoutProduct";
 import Currency from "react-currency-formatter";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import Stripe from "stripe";
+import { fetchPostJSON } from "../utils/api-helpers";
+import getStripe from "../utils/get-stripejs";
 
 function Checkout() {
   const items = useSelector(selectBasketItems);
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [groupedItemsInBasket, setGroupedItemsInBasket] = useState(
     {} as { [key: string]: Product[] }
   );
@@ -25,6 +29,36 @@ function Checkout() {
 
     setGroupedItemsInBasket(groupedItems);
   }, [items]);
+
+  const createCheckoutSession = async () => {
+    setLoading(true);
+
+    const checkoutSession: Stripe.Checkout.Session = await fetchPostJSON(
+      "/api/checkout_sessions",
+      { items: items }
+    );
+
+    if ((checkoutSession as any).statusCode == 500) {
+      console.error((checkoutSession as any).message);
+      return;
+    }
+
+    const stripe = await getStripe();
+
+    const { error } = await stripe!.redirectToCheckout({
+      // make the id field from the checkout session creation API response
+      // available to this file, so you can provide it as a param here
+      // instead of the {CHECKOUT_SESSION_ID} placeholder
+      sessionId: checkoutSession.id,
+    });
+
+    // if rediredtToCheckout fails due to browser or network
+    // error, display the localized error msg to your customer
+    // using `error.message`
+    console.warn(error.message);
+
+    setLoading(false);
+  };
 
   return (
     <div className="min-h-screen overflow-hidden bg-[#E7ECEE]">
@@ -115,10 +149,10 @@ function Checkout() {
                     </h4>
                     <Button
                       noIcon
-                      // loading={loading}
+                      loading={loading}
                       title="Check Out"
                       width="w-full"
-                      // onclick={createCheckoutSession}
+                      onClick={createCheckoutSession}
                     />
                   </div>
                 </div>
